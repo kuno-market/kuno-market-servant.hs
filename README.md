@@ -12,22 +12,22 @@ Note that the market-data API is serverd under the path `/public/{currency-pair}
 
 For example:
 ```Haskell
+
 import Servant
-import API
 import Network.HTTP.Client (newManager, defaultManagerSettings)
 import Servant.Client
 import Data.ByteString hiding (putStrLn)
 import Network.KunoMarket.API.Public
 
 getOrderBook :: ClientM ByteString
-getTicker :: ClientM ByteString
-getTrades :: ClientM ByteString
-getOrderBook :<|> getTicker :<|> getTrades = client api
+getTicker    :: ClientM ByteString
+getTrades    :: ClientM ByteString
+getOrderBook :<|> getTicker :<|> getTrades = client publicApi
 
 main :: IO ()
 main = do
   manager' <- newManager defaultManagerSettings
-  let env = mkClientEnv manager' (BaseUrl Https "https://api.kuno.market" 443 "public/BTC-ZAR/v1")
+  let env = mkClientEnv manager' (BaseUrl Https "api.kuno.market" 443 "public/BTC-ZAR/v1")
   res <- runClientM getOrderBook env
   case res of
     Left err -> putStrLn $ "Error: " ++ show err
