@@ -1,11 +1,11 @@
-name: kuno-market-servant-servant
+name: kuno-market-servant
 version: '0.1.0.0'
 category: Web, Bitcoin
 author: Tebello Thejane
 maintainer: tebello@kuno.market
 copyright: 2018 Tebello Thejane
 license: BSD3
-github: githubuser/kuno-market-servant-servant
+github: https://github.com/kuno-market/kuno-market-servant
 extra-source-files:
 - README.md
 ghc-options:
@@ -19,7 +19,16 @@ dependencies:
 - wai-extra
 - bytestring
 - http-media
+
 library:
   source-dirs: lib
   exposed-modules:
   - Network.KunoMarket.API.Public
+
+tests:
+  public-sample:
+    main: public-sample.hs
+    source-dirs: test
+    dependencies:
+      - kuno-market-servant
+      - http-client
