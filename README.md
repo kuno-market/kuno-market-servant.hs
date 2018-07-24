@@ -2,6 +2,10 @@
 
 Servant API specifications for Kuno Market's APIs. Use the `servant-api` package to generate functions for interacting with Kuno Market's APIs.
 
+## Versioning
+
+To use the v1 API, you need to checkout the `v1` branch. The `master` branch should be considered unstable.
+
 ## Network.KunoMarket.API.Public
 
 This is the API spec for the public market-data API.
