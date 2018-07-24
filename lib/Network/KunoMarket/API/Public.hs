@@ -4,13 +4,12 @@
 module Network.KunoMarket.API.Public where
 
 import Servant
-import Data.ByteString
-import Network.KunoMarket.API.RawJSON
+import Network.KunoMarket.API.Types
 
 type PublicAPI =
-       "order-book" :> Get '[RawJSON] ByteString
-  :<|> "ticker"     :> Get '[RawJSON] ByteString
-  :<|> "trades"     :> Get '[RawJSON] ByteString
+       "order-book" :> Get '[JSON] OrderBook
+  :<|> "ticker"     :> Get '[JSON] Ticker
+  :<|> "trades"     :> Get '[JSON] Trades
 
 publicApi :: Proxy PublicAPI
 publicApi = Proxy

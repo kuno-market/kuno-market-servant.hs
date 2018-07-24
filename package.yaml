@@ -12,18 +12,20 @@ ghc-options:
 - -Wall
 - -Wtabs
 - -Wcompat
+
 dependencies:
 - base >=4.7 && <5
 - servant-server
-- servant-client
-- wai-extra
-- bytestring
-- http-media
+- aeson
+- time
+- deepseq
+- text
 
 library:
   source-dirs: lib
   exposed-modules:
   - Network.KunoMarket.API.Public
+  - Network.KunoMarket.API.Types
 
 tests:
   public-sample:
@@ -32,3 +34,4 @@ tests:
     dependencies:
       - kuno-market-servant
       - http-client
+      - servant-client

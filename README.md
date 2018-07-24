@@ -2,8 +2,6 @@
 
 Servant API specifications for Kuno Market's APIs. Use the `servant-api` package to generate functions for interacting with Kuno Market's APIs.
 
-APIs return pure, schemaless JSON as `ByteString`s. You may use `lens-aeson` to inspect the payloads.
-
 ## Network.KunoMarket.API.Public
 
 This is the API spec for the public market-data API.
@@ -12,16 +10,15 @@ Note that the market-data API is serverd under the path `/public/{currency-pair}
 
 For example:
 ```Haskell
-
 import Servant
 import Network.HTTP.Client (newManager, defaultManagerSettings)
 import Servant.Client
-import Data.ByteString hiding (putStrLn)
+import Network.KunoMarket.API.Types
 import Network.KunoMarket.API.Public
 
-getOrderBook :: ClientM ByteString
-getTicker    :: ClientM ByteString
-getTrades    :: ClientM ByteString
+getOrderBook :: ClientM OrderBook
+getTicker    :: ClientM Ticker
+getTrades    :: ClientM Trades
 getOrderBook :<|> getTicker :<|> getTrades = client publicApi
 
 main :: IO ()

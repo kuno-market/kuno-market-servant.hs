@@ -1,14 +1,14 @@
 import Servant
 import Network.HTTP.Client (newManager, defaultManagerSettings)
 import Servant.Client
-import Data.ByteString hiding (putStrLn)
+import Network.KunoMarket.API.Types
 import Network.KunoMarket.API.Public
 
---This file mrely needs to compile for the test to be considered successful.
+--This file merely needs to compile for the test to be considered successful.
 
-getOrderBook :: ClientM ByteString
-getTicker    :: ClientM ByteString
-getTrades    :: ClientM ByteString
+getOrderBook :: ClientM OrderBook
+getTicker    :: ClientM Ticker
+getTrades    :: ClientM Trades
 getOrderBook :<|> getTicker :<|> getTrades = client publicApi
 
 main :: IO ()
