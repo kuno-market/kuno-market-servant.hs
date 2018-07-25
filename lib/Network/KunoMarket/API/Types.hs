@@ -61,7 +61,7 @@ instance FromJSON OrderSide where
   parseJSON (String s) =
     case toUpper s of
       "BUY"  -> pure Buy
-      "SELL" -> pure Buy
+      "SELL" -> pure Sell
       _ -> fail $ "Unknown order-side type: " ++ show s
   parseJSON s = typeMismatch "OrderSide" s
 
