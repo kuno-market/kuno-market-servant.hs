@@ -20,6 +20,7 @@ dependencies:
 - time
 - deepseq
 - text
+- scientific
 
 library:
   source-dirs: lib
