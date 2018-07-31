@@ -5,7 +5,7 @@ author: Tebello Thejane
 maintainer: tebello@kuno.market
 copyright: 2018 Tebello Thejane
 license: BSD3
-github: https://github.com/kuno-market/kuno-market-servant
+github: kuno-market/kuno-market-servant
 extra-source-files:
 - README.md
 ghc-options:
