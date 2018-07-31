@@ -29,6 +29,7 @@ import Data.Text (toUpper, unpack)
 import Data.Ratio ((%))
 import Text.Read (readEither)
 import Data.Scientific
+import Data.Monoid ((<>))
 
 type Trades = [Trade]
 
