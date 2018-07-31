@@ -40,18 +40,18 @@ data Trade = Trade
 } deriving (Show, Eq, Ord, Data, Generic, NFData)
 
 data Ticker = Ticker
-} deriving (Show, Eq, Ord, Data, Generic, NFData)
   { buy  :: Maybe Scientific
   , sell :: Maybe Scientific
   , last :: Maybe Scientific
+} deriving (Show, Eq, Ord, Data, Generic, NFData, FromJSON, ToJSON)
 
 data OrderSide = Buy | Sell
-  deriving (Show, Eq, Ord, Data, Generic, NFData)
+  deriving (Show, Eq, Ord, Data, Generic, NFData, ToJSON)
 
 data OrderBook = OrderBook
  { sells :: [PriceLevel]
  , buys  :: [PriceLevel]
-} deriving (Show, Eq, Ord, Data, Generic, NFData, FromJSON)
+} deriving (Show, Eq, Ord, Data, Generic, NFData, FromJSON, ToJSON)
 
 data PriceLevel = PriceLevel
   { volume :: Scientific
@@ -89,3 +89,35 @@ parseQuotedScientific (String q) =
     Right d -> pure d
 parseQuotedScientific (Number q) = pure q
 parseQuotedScientific v = typeMismatch "Number" v
+
+--------------------------------------------------------------------------------
+
+--TODO: We use a slightly generous 10 decimal places of precision here in
+-- consideration of Bitcoin's 8 decimal places (volumes are always quoted in
+-- the base currency). When we add other currency pairs we need to rethink the
+-- precision...
+
+scientificPrecision :: Int
+scientificPrecision = 10
+
+showScientific :: Scientific -> String
+showScientific = formatScientific Fixed (Just scientificPrecision)
+
+instance ToJSON Trade where
+  toEncoding Trade {..} =
+    pairs (
+      "volume"    .= showScientific volume <>
+      "price"     .= showScientific price <>
+      "side"      .= side <>
+      "timestamp" .= showUTCTime timestamp
+    )
+
+instance ToJSON PriceLevel where
+  toEncoding PriceLevel {..} =
+    pairs (
+      "volume" .= showScientific volume <>
+      "price"  .= show price
+    )
+
+showUTCTime :: UTCTime -> Int
+showUTCTime t = round @Double $ (* 1e3) $ realToFrac $ utcTimeToPOSIXSeconds t
