@@ -5,7 +5,7 @@ author: Tebello Thejane
 maintainer: tebello@kuno.market
 copyright: 2018 Tebello Thejane
 license: BSD3
-github: https://github.com/kuno-market/kuno-market-servant
+github: kuno-market/kuno-market-servant
 extra-source-files:
 - README.md
 ghc-options:
@@ -20,6 +20,7 @@ dependencies:
 - time
 - deepseq
 - text
+- scientific
 
 library:
   source-dirs: lib
@@ -35,3 +36,15 @@ tests:
       - kuno-market-servant
       - http-client
       - servant-client
+    other-modules: []
+  public-qc:
+    main: public-qc.hs
+    source-dirs: test
+    dependencies:
+      - kuno-market-servant
+      - QuickCheck
+      - hspec
+      - hspec-expectations
+      - hspec-contrib
+      - random
+    other-modules: []
