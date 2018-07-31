@@ -36,3 +36,15 @@ tests:
       - kuno-market-servant
       - http-client
       - servant-client
+    other-modules: []
+  public-qc:
+    main: public-qc.hs
+    source-dirs: test
+    dependencies:
+      - kuno-market-servant
+      - QuickCheck
+      - hspec
+      - hspec-expectations
+      - hspec-contrib
+      - random
+    other-modules: []
