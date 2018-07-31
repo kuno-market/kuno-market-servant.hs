@@ -32,5 +32,5 @@ main = do
   res <- runClientM getOrderBook env
   case res of
     Left err -> putStrLn $ "Error: " ++ show err
-    Right book -> print book
+    Right _  -> putStrLn "Success!"
 ```
