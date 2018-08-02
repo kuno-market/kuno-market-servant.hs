@@ -28,7 +28,7 @@ getOrderBook :<|> getTicker :<|> getTrades = client publicApi
 main :: IO ()
 main = do
   manager' <- newManager defaultManagerSettings
-  let env = mkClientEnv manager' (BaseUrl Https "api.kuno.market" 443 "public/BTC-ZAR/v1")
+  let env = ClientEnv manager' (BaseUrl Https "api.kuno.market" 443 "/public/BTC-ZAR/v1")
   res <- runClientM getOrderBook env
   case res of
     Left err -> putStrLn $ "Error: " ++ show err
