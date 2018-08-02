@@ -93,22 +93,11 @@ parseQuotedScientific v = typeMismatch "Number" v
 
 --------------------------------------------------------------------------------
 
---TODO: We use a slightly generous 10 decimal places of precision here in
--- consideration of Bitcoin's 8 decimal places (volumes are always quoted in
--- the base currency). When we add other currency pairs we need to rethink the
--- precision...
-
-scientificPrecision :: Int
-scientificPrecision = 10
-
-showScientific :: Scientific -> String
-showScientific = formatScientific Fixed (Just scientificPrecision)
-
 instance ToJSON Trade where
   toEncoding Trade {..} =
     pairs (
-      "volume"    .= showScientific volume <>
-      "price"     .= showScientific price <>
+      "volume"    .= show volume <>
+      "price"     .= show price <>
       "side"      .= side <>
       "timestamp" .= showUTCTime timestamp
     )
@@ -116,7 +105,7 @@ instance ToJSON Trade where
 instance ToJSON PriceLevel where
   toEncoding PriceLevel {..} =
     pairs (
-      "volume" .= showScientific volume <>
+      "volume" .= show volume <>
       "price"  .= show price
     )
 
