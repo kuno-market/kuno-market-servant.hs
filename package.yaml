@@ -27,6 +27,8 @@ library:
   exposed-modules:
   - Network.KunoMarket.API.Public
   - Network.KunoMarket.API.Public.Types
+  - Network.KunoMarket.API.Global
+  - Network.KunoMarket.API.Global.Types
 
 tests:
   public-sample:
