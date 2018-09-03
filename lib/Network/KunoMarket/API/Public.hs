@@ -4,7 +4,7 @@
 module Network.KunoMarket.API.Public where
 
 import Servant
-import Network.KunoMarket.API.Types
+import Network.KunoMarket.API.Public.Types
 
 type PublicAPI =
        "order-book" :> Get '[JSON] OrderBook
