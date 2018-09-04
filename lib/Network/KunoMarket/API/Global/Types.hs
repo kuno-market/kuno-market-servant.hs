@@ -13,22 +13,21 @@ import Data.Data (Data)
 import GHC.Generics (Generic)
 import Control.DeepSeq (NFData)
 import Data.Aeson (FromJSON(..), ToJSON(..))
-import Data.Text (Text)
 
 data SymbolInfo = SymbolInfo
-  { name          :: Text
-  , symbolType    :: Text
+  { name          :: String
+  , symbolType    :: String
   , symbolDetails :: CurrencyPairDetails
 } deriving (Show, Eq, Ord, Data, Generic, NFData, FromJSON, ToJSON)
 
 data CurrencyPairDetails = CurrencyPairDetails
-  { baseCurrency  :: Text
-  , quoteCurrency :: Text
+  { baseCurrency  :: String
+  , quoteCurrency :: String
 } deriving (Show, Eq, Ord, Data, Generic, NFData, FromJSON, ToJSON)
 
 data CurrencyInfo = CurrencyInfo
-  { name         :: Text
-  , symbol       :: Text
-  , abbreviation :: Text
+  { name         :: String
+  , symbol       :: String
+  , abbreviation :: String
   , precision    :: Int
 } deriving (Show, Eq, Ord, Data, Generic, NFData, FromJSON, ToJSON)
