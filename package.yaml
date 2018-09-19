@@ -50,3 +50,14 @@ tests:
       - hspec-contrib
       - random
     other-modules: []
+  readme:
+    main: readme.lhs
+    dependencies:
+      - kuno-market-servant
+      - markdown-unlit
+      - servant-client
+      - http-client
+    ghc-options:
+      - -pgmL markdown-unlit
+      - -optL haskell+literate
+    other-modules: []
