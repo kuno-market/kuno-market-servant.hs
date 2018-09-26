@@ -21,24 +21,21 @@ dependencies:
 - deepseq
 - text
 - scientific
+- unordered-containers
+- vector
 
 library:
   source-dirs: lib
   exposed-modules:
+  - Network.KunoMarket.API.Common.Types
   - Network.KunoMarket.API.Public
   - Network.KunoMarket.API.Public.Types
   - Network.KunoMarket.API.Global
   - Network.KunoMarket.API.Global.Types
+  - Network.KunoMarket.API.Private
+  - Network.KunoMarket.API.Private.Types
 
 tests:
-  public-sample:
-    main: public-sample.hs
-    source-dirs: test
-    dependencies:
-      - kuno-market-servant
-      - http-client
-      - servant-client
-    other-modules: []
   public-qc:
     main: public-qc.hs
     source-dirs: test
@@ -49,6 +46,26 @@ tests:
       - hspec-expectations
       - hspec-contrib
       - random
+    other-modules: []
+  private-qc:
+    main: private-qc.hs
+    source-dirs: test
+    dependencies:
+      - kuno-market-servant
+      - QuickCheck
+      - hspec
+      - hspec-expectations
+      - hspec-contrib
+      - random
+      - generic-lens
+      - microlens
+    other-modules: []
+  doctests:
+    main: doctests.hs
+    source-dirs: test
+    dependencies:
+      - kuno-market-servant
+      - doctest
     other-modules: []
   readme:
     main: readme.lhs

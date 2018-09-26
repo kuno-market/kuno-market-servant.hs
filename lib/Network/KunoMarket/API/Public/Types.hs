@@ -3,15 +3,12 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE NumDecimals #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# OPTIONS_GHC -Wno-name-shadowing #-}
 
 module Network.KunoMarket.API.Public.Types
-  ( Trades
-  , Trade(..)
+  ( Trade(..)
   , Ticker(..)
   , OrderSide(..)
   , PriceLevel(..)
@@ -19,62 +16,61 @@ module Network.KunoMarket.API.Public.Types
   ) where
 
 import Data.Time
-import Data.Time.Clock.POSIX
 import Data.Data (Data)
 import GHC.Generics (Generic)
 import Control.DeepSeq (NFData)
 import Data.Aeson (FromJSON(..), Value(..), (.:), (.=), ToJSON(..), pairs)
-import Data.Aeson.Types (typeMismatch, Parser)
-import Data.Text (toUpper, unpack)
-import Data.Ratio ((%))
-import Text.Read (readEither)
+import Data.Aeson.Types (typeMismatch)
 import Data.Scientific
 import Data.Monoid ((<>))
+import Network.KunoMarket.API.Common.Types (OrderSide(..), parseQuotedScientific,
+                                           utcTimeToMS, msToUTCTime)
 
-type Trades = [Trade]
-
+-- | Each Trade is presented from the viewpoint of the __maker__ order (already in the order-book).
+--
+-- For example, if we had a limit buy order at some price on the order book, and it matched against
+--  an incoming market sell order, then the 'Trade' object would signify how many units of the quote
+--  currency the maker had to pay the taker. On the other side, the taker would give some amount of
+--  the base currency to the maker, but there would be no 'Trade' object denoting this reciprocal event.
 data Trade = Trade
-  { volume    :: Scientific
-  , price     :: Scientific
-  , side      :: OrderSide
+  { amount    :: Scientific
+    -- ^ For Buy order, as units of Quote currency (e.g. ZAR) given.
+    --   For Sell order, as units of Base currency (e.g. BTC) given.
+  , price     :: Scientific -- ^ Price at which this order happened.
+  , side      :: OrderSide -- ^ Side of the maker order which was already on the book.
   , timestamp :: UTCTime
 } deriving (Show, Eq, Ord, Data, Generic, NFData)
 
 data Ticker = Ticker
   { buy  :: Maybe Scientific
+    -- ^ Will be 'Nothing' if there are no buy orders,
+    --   otherwise it be the best (highest) price of any buy orders in the order book.
   , sell :: Maybe Scientific
-  , last :: Maybe Scientific
+    -- ^ Will be 'Nothing' if there are no sell orders.
+    --   otherwise it be the best (lowest) price of any sell orders in the order book.
+  , last :: Maybe Scientific -- ^ Will be 'Nothing' if the market has yet to see any trades.
 } deriving (Show, Eq, Ord, Data, Generic, NFData, FromJSON, ToJSON)
 
-data OrderSide = Buy | Sell
-  deriving (Show, Eq, Ord, Data, Generic, NFData, ToJSON)
-
+-- | Note that orders are conflated in each price level, thus there is only a single volume
+--   per price.
 data OrderBook = OrderBook
  { sells :: [PriceLevel]
  , buys  :: [PriceLevel]
 } deriving (Show, Eq, Ord, Data, Generic, NFData, FromJSON, ToJSON)
 
 data PriceLevel = PriceLevel
-  { volume :: Scientific
+  { volume :: Scientific -- ^ In base currency units.
   , price  :: Scientific
 } deriving (Show, Eq, Ord, Data, Generic, NFData)
 
 --------------------------------------------------------------------------------
 
-instance FromJSON OrderSide where
-  parseJSON (String s) =
-    case toUpper s of
-      "BUY"  -> pure Buy
-      "SELL" -> pure Sell
-      _ -> fail $ "Unknown order-side type: " ++ show s
-  parseJSON s = typeMismatch "OrderSide" s
-
 instance FromJSON Trade where
   parseJSON (Object v) = Trade
-    <$> (v .: "volume" >>= parseQuotedScientific)
+    <$> (v .: "amount" >>= parseQuotedScientific)
     <*> (v .: "price"  >>= parseQuotedScientific)
     <*>  v .: "side"
-    <*> fmap (posixSecondsToUTCTime . fromRational . (% 1e3)) (v .: "timestamp")
+    <*> fmap msToUTCTime (v .: "timestamp")
   parseJSON v = typeMismatch "Trade" v
 
 instance FromJSON PriceLevel where
@@ -83,23 +79,15 @@ instance FromJSON PriceLevel where
     <*> (v .: "price"  >>= parseQuotedScientific)
   parseJSON v = typeMismatch "PriceLevel" v
 
-parseQuotedScientific :: Value -> Parser Scientific
-parseQuotedScientific (String q) =
-  case readEither @Scientific $ unpack q of
-    Left _  -> fail "failure parsing quoted decimal"
-    Right d -> pure d
-parseQuotedScientific (Number q) = pure q
-parseQuotedScientific v = typeMismatch "Number" v
-
 --------------------------------------------------------------------------------
 
 instance ToJSON Trade where
   toEncoding Trade {..} =
     pairs (
-      "volume"    .= show volume <>
+      "amount"    .= show amount <>
       "price"     .= show price <>
       "side"      .= side <>
-      "timestamp" .= showUTCTime timestamp
+      "timestamp" .= utcTimeToMS timestamp
     )
 
 instance ToJSON PriceLevel where
@@ -108,6 +96,3 @@ instance ToJSON PriceLevel where
       "volume" .= show volume <>
       "price"  .= show price
     )
-
-showUTCTime :: UTCTime -> Int
-showUTCTime t = round @Double $ (* 1e3) $ realToFrac $ utcTimeToPOSIXSeconds t

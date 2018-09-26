@@ -8,7 +8,7 @@
 
 import Prelude
 
-import Network.KunoMarket.API.Types
+import Network.KunoMarket.API.Public.Types
 import Test.Hspec
 import Test.QuickCheck
 import Data.Time
@@ -30,7 +30,7 @@ prop_RoundTrip t = decode (encode t) == Just t
 
 instance Arbitrary Trade where
   arbitrary = do
-    volume <- arbitraryBitcoins
+    amount <- arbitraryBitcoins
     price <- arbitraryRands
     side <- elements [Buy, Sell]
     timestamp <- arbitrary
