@@ -1,0 +1,18 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo Install Stack...
+      - sudo apt-get update
+      - wget -qO- https://get.haskellstack.org/ | sh
+      - stack update
+      - stack --version
+      - stack install markdown-unlit
+      - ls -lah
+  build:
+    commands:
+      - stack test
+cache:
+  paths:
+    - '/root/.stack/**/*'
