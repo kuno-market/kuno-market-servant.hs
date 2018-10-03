@@ -17,8 +17,8 @@ type PrivateAPI =
 
   :<|> KunoBasicAuth :> "orders" :> Capture "order-id" String
                      :> DeleteNoContent '[JSON, PlainText] NoContent
-  -- :<|> KunoBasicAuth :> "orders" :> Capture "order-id" String :> Get '[JSON] Order
-  -- :<|> KunoBasicAuth :> "orders" :> QueryParam "status" [String] :> Get '[JSON] [Order]
+  :<|> KunoBasicAuth :> "orders" :> Capture "order-id" String :> Get '[JSON] Order
+  :<|> KunoBasicAuth :> "orders" :> QueryParam "status" [String] :> Get '[JSON] [Order]
   :<|> KunoBasicAuth :> "orders" :> ReqBody '[JSON] OrderRequest
                      :> PostAccepted '[JSON] String
 

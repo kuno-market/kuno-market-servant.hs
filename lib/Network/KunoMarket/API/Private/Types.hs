@@ -23,6 +23,8 @@ module Network.KunoMarket.API.Private.Types
   , TakeProfitType(..)
   , StopLossType(..)
   , OrderFeature(..)
+  , Order(..)
+  , OrderEvent(..)
   ) where
 
 import Data.Time
@@ -50,45 +52,54 @@ newtype AuthedAccount = AuthedAccount {accountId :: String}
 
 data OrderRequest = OrderRequest
   { size      :: Scientific
+    -- ^ For a Limit order, this should be in Base currency units (e.g. BTC).
+    --   For a Market Buy order, this should be in Quote currency units (e.g. ZAR you want to buy with).
+    --   For a Market Sell order, this should be in Base currency units (e.g. BTC you want to sell).
   , side      :: OrderSide
   , priceType :: OrderPriceType
-  , symbol    :: String
+  , symbol    :: String -- ^ For now, a currency pair such as \"BTC-ZAR\".
   , features  :: [OrderFeature]
+    -- ^ A set of modifiers to add to this request. Note that a specific 'OrderFeature' \"type\"
+    --   should only appear once (for instance, one can't specify two 'FeatureComments'\' at
+    --   once), and some combinations are forbidden (for instance, 'FeaturePostOnly PostOnly'
+    --   is incompatible with 'Market' orders). All such illegal combinations will be rejected.
 } deriving (Show, Read, Eq, Generic, NFData)
 
 data StopLossType
   = NoStopLoss
-  | VanillaStopLoss Scientific -- absolute price
-  | TrailingStopLossNominal Scientific -- difference from price
-  | TrailingStopLossPercentage Scientific -- percentage
+  | VanillaStopLoss Scientific -- ^ Absolute price.
+  | TrailingStopLossNominal Scientific -- ^ Absolute difference from price.
+  | TrailingStopLossPercentage Scientific -- ^ Percentage difference from price.
   deriving (Show, Read, Eq, Generic, NFData, Ord)
 
 data TakeProfitType
   = NoTakeProfit
-  | VanillaTakeProfit Scientific
-  | TrailingTakeProfitNominal Scientific
-  | TrailingTakeProfitPercentage Scientific
+  | VanillaTakeProfit Scientific -- ^ Absolute price.
+  | TrailingTakeProfitNominal Scientific -- ^ Absolute difference from price.
+  | TrailingTakeProfitPercentage Scientific -- ^ Percentage difference from price.
   deriving (Show, Read, Eq, Generic, NFData, Ord)
 
 data OrderFeature
-  = FeatureComments String
+  = FeatureComments String -- ^ A simple, arbitrary comment to attach to the order.
   | FeatureStopLoss StopLossType
   | FeatureTakeProfit TakeProfitType
-  | FeaturePostOnly PostOnlyType
+  | FeaturePostOnly PostOnlyType -- ^ 'PostOnly' is incompatible with 'Market' orders.
   | FeatureTimeInForce TimeInForce
   deriving (Show, Read, Eq, Generic, NFData, Ord)
 
 data Wallet = Wallet
-  { asset      :: String
-  , identifier :: String
-  , balances   :: [Balance]
+  { asset    :: String -- ^ For now, a currency (e.g. \"BTC\").
+  , walletId :: String
+  , balances :: [Balance]
 } deriving (Show, Read, Eq, Generic, NFData, ToJSON, FromJSON)
 
+--FIXME: document this...
 data WalletMovement = WalletMovement
   { asset     :: String
-  , amount    :: Scientific
+  , amount    :: Scientific -- ^ This will be in the asset's units.
   , timestamp :: UTCTime
   , reason    :: WalletMovementReason
+    -- ^ Possible values include \"withdrawal\", \"deposit\", \"trade\", \"reservation\" ()
 } deriving (Show, Read, Eq, Generic, NFData)
 
 type WalletMovementReason = String
@@ -99,9 +110,9 @@ data Balance = Balance
 } deriving (Show, Read, Eq, Generic, NFData)
 
 data BalanceType
-  = Nominal --funds unused
-  | NominalReserved --funds reserved for limit order
-  | Withdrawing --funds marked to be withdrawn
+  = Nominal -- ^ Funds unused
+  | NominalReserved -- ^ Funds reserved for limit order
+  | Withdrawing -- ^ Funds marked to be withdrawn
   deriving (Show, Read, Eq, Generic, NFData)
 
 data PrivateTrade = PrivateTrade
@@ -135,6 +146,26 @@ data FeeStructure = FeeStructure
   { makerFee :: Scientific
   , takerFee :: Scientific
 } deriving (Show, Read, Eq, Generic, NFData)
+
+data Order = Order
+  { size          :: Scientific
+  , remainingSize :: Scientific
+  , side          :: OrderSide
+  , priceType     :: OrderPriceType
+  , timeInForce   :: TimeInForce
+  , symbol        :: String
+  , stopLoss      :: StopLossType
+  , takeProfit    :: TakeProfitType
+  , comments      :: Maybe String
+  , events        :: [OrderEvent]
+  , timestamp     :: UTCTime
+  , orderId       :: String
+}
+
+data OrderEvent = OrderEvent
+  { timestamp :: UTCTime
+  , event     :: String
+}
 
 --------------------------------------------------------------------------------
 
