@@ -30,6 +30,7 @@ module Network.KunoMarket.API.Private.Types
 import Data.Time
 import Data.Data (Data)
 import GHC.Generics (Generic)
+import Data.Dynamic (Dynamic)
 import Control.DeepSeq (NFData)
 import Data.Scientific
 import Data.Monoid ((<>))
@@ -48,7 +49,7 @@ import Data.List ((\\))
 import Data.Text (unpack, pack, toUpper, words)
 import Text.Read (readMaybe)
 
-newtype AuthedAccount = AuthedAccount {accountId :: String}
+newtype AuthedAccount = AuthedAccount {unAuthedAccount :: Dynamic}
 
 data OrderRequest = OrderRequest
   { size      :: Scientific
