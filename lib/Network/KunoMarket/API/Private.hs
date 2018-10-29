@@ -31,7 +31,7 @@ type PrivateAPI =
                      :> Get '[JSON] [PrivateTrade]
   :<|> KunoBasicAuth :> "wallets" :> Capture "symbol" String :> "history"
                      :> QueryParam "from" Int :> QueryParam "to" Int
-                     :> Get '[JSON] [Wallet]
+                     :> Get '[JSON] [WalletMovement]
   :<|> KunoBasicAuth :> "wallets" :> Capture "symbol" String :> "history" :> "pending"
                      :> Get '[JSON] [WalletMovement]
   :<|> KunoBasicAuth :> "wallets" :> Capture "symbol" String
